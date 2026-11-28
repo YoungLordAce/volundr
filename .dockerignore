@@ -22,6 +22,8 @@ docs/
 site/
 .cache/
 .github/
+.agents/
+AGENTS.md
 zensical.toml
 src/gui/
 volundr_gui.pyw

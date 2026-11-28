@@ -13,9 +13,14 @@ tools/*
 **/keys.txt
 **/aes_keys.txt
 **/boot9.bin
+**/seeddb.bin
 **/prod.keys
 **/title.keys
 **/PSV_*.tsv
+
+# Local-only AI agent rules & skills
+AGENTS.md
+.agents/
 
 # Pipeline runtime directories (auto-created by Völundr on startup)
 drop/
