@@ -3,7 +3,7 @@
 All notable changes to Völundr are documented in this file.
 Versioning follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`).
 
-## [Unreleased]
+## [0.3.1] - 2026-11-28
 
 ### Added
 - **One-Click Windows Launcher (`Start Volundr.bat`):** Auto-bootstraps `.venv`, installs core and GUI dependencies on first run, and launches Völundr windowless via `pythonw.exe`.
