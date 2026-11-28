@@ -162,10 +162,13 @@ rvz_compression_level = 5
 switch_merge_format = "xci"
 decompress_nsz = true
 
-# Nintendo 3DS (Azahar / Citra):
+# Nintendo 3DS (Azahar / Citra / Cocoon FE):
 #   - Azahar uses `.cci` for decrypted cartridge dumps.
+#   - Base Game `.cia` packages (`00040000...`) auto-convert to decrypted `.cci` in `3ds/` when
+#     `boot9.bin` (and optional `seeddb.bin` for 9.6+ eShop titles) is in `tools/3ds/`.
 #   - Install-only `.cia` updates/DLC route to `3ds/_cia_install` (hidden from top-level frontend scanners).
 rename_3ds_to_cci = true
+cia_games_to_cci = true
 cia_subdir = "_cia_install"
 
 # Multi-Disc Playlists (.m3u):

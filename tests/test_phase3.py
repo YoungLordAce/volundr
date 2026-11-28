@@ -359,6 +359,99 @@ class Phase3Tests(unittest.TestCase):
                 ingest_target(bad_rom, cfg_bad)
             self.assertIn("IVFC", str(ctx.exception))
 
+    def test_3ds_base_game_cia_to_cci_and_update_dlc_routing(self) -> None:
+        from src.ctr_decrypt import inspect_3ds_header, inspect_cia_header, load_seeddb_map
+
+        def _make_synthetic_cia(title_id: int, ncch_payload: bytes) -> bytes:
+            header_size = 0x2020
+            cert_size = 0x40
+            tik_size = 0x40
+            sig_block = (0x010004).to_bytes(4, "big") + (b"\x00" * 0x13C)  # RSA-2048 SHA256
+            tmd_body = bytearray(0x9C4 + 0x30)
+            tmd_body[0x4C:0x54] = title_id.to_bytes(8, "big")
+            tmd_body[0x9E:0xA0] = (1).to_bytes(2, "big")
+            # Chunk 0 (unencrypted CIA content)
+            rec = 0x9C4
+            tmd_body[rec : rec + 4] = (0).to_bytes(4, "big")       # content_id
+            tmd_body[rec + 4 : rec + 6] = (0).to_bytes(2, "big")   # cindex 0
+            tmd_body[rec + 6 : rec + 8] = (0).to_bytes(2, "big")   # ctype (unencrypted)
+            tmd_body[rec + 8 : rec + 16] = len(ncch_payload).to_bytes(8, "big")
+            tmd_bytes = sig_block + bytes(tmd_body)
+
+            cia_hdr = bytearray(0x2040)
+            cia_hdr[0x00:0x04] = header_size.to_bytes(4, "little")
+            cia_hdr[0x08:0x0C] = cert_size.to_bytes(4, "little")
+            cia_hdr[0x0C:0x10] = tik_size.to_bytes(4, "little")
+            cia_hdr[0x10:0x14] = len(tmd_bytes).to_bytes(4, "little")
+            cia_hdr[0x18:0x20] = len(ncch_payload).to_bytes(8, "little")
+            tmd_pad = ((len(tmd_bytes) + 63) & ~63) - len(tmd_bytes)
+            return bytes(cia_hdr) + (b"\x00" * cert_size) + (b"\x00" * tik_size) + tmd_bytes + (b"\x00" * tmd_pad) + ncch_payload
+
+        # Build a minimal valid decrypted NCCH partition (0x400 bytes, NoCrypto set)
+        ncch = bytearray(0x400)
+        ncch[0x100:0x104] = b"NCCH"
+        ncch[0x104:0x108] = (len(ncch) // 0x200).to_bytes(4, "little")
+        ncch[0x108:0x110] = (0x0004000000123400).to_bytes(8, "little")
+        ncch[0x118:0x120] = (0x0004000000123400).to_bytes(8, "little")
+        ncch[0x18F] = 0x04  # NoCrypto (already decrypted)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg = self._make_isolated_config(root, PostProcessAction.MOVE)
+
+            # 1. Base Game `.cia` (`00040000...`) -> auto-converted to decrypted `.cci` in `3ds/`
+            game_cia = cfg.paths.watch_dir / "Severed (Europe) (eShop).cia"
+            game_cia.write_bytes(_make_synthetic_cia(0x0004000000123400, bytes(ncch)))
+            info_g = inspect_cia_header(game_cia)
+            self.assertIsNotNone(info_g)
+            assert info_g is not None
+            self.assertEqual(info_g.category, "game")
+            self.assertTrue(info_g.is_convertible_game)
+
+            out_game = ingest_target(game_cia, cfg)
+            expected_cci = cfg.paths.library_root / "3ds" / "Severed (Europe) (eShop).cci"
+            self.assertTrue(expected_cci.is_file())
+            self.assertEqual(out_game.routed_files, (expected_cci,))
+            is_enc, _, _ = inspect_3ds_header(expected_cci)
+            self.assertFalse(is_enc)
+            cci_raw = expected_cci.read_bytes()
+            self.assertEqual(cci_raw[0x100:0x104], b"NCSD")
+            self.assertEqual(cci_raw[0x4100:0x4104], b"NCCH")
+
+            # 2. Update `.cia` (`0004000e...`) & DLC `.cia` (`0004008c...`) -> routed to `3ds/_cia_install/`
+            upd_cia = cfg.paths.watch_dir / "Game (Update).cia"
+            upd_cia.write_bytes(_make_synthetic_cia(0x0004000E00123400, bytes(ncch)))
+            info_u = inspect_cia_header(upd_cia)
+            self.assertIsNotNone(info_u)
+            assert info_u is not None
+            self.assertEqual(info_u.category, "update")
+            self.assertFalse(info_u.is_convertible_game)
+            ingest_target(upd_cia, cfg)
+            self.assertTrue((cfg.paths.library_root / "3ds" / "_cia_install" / "Game (Update).cia").is_file())
+
+            dlc_cia = cfg.paths.watch_dir / "Game (DLC).cia"
+            dlc_cia.write_bytes(_make_synthetic_cia(0x0004008C00123400, bytes(ncch)))
+            info_d = inspect_cia_header(dlc_cia)
+            self.assertIsNotNone(info_d)
+            assert info_d is not None
+            self.assertEqual(info_d.category, "dlc")
+            self.assertFalse(info_d.is_convertible_game)
+            ingest_target(dlc_cia, cfg)
+            self.assertTrue((cfg.paths.library_root / "3ds" / "_cia_install" / "Game (DLC).cia").is_file())
+
+            # 3. Verify `load_seeddb_map` parses binary `seeddb.bin` entries
+            seed_bytes = bytes(range(16))
+            seeddb = root / "seeddb.bin"
+            seeddb.write_bytes(
+                (1).to_bytes(4, "little")
+                + (b"\x00" * 12)
+                + (0x0004000000165F00).to_bytes(8, "little")
+                + seed_bytes
+                + (b"\x00" * 8)
+            )
+            seed_map = load_seeddb_map(seeddb)
+            self.assertEqual(seed_map.get(0x0004000000165F00), seed_bytes)
+
     def test_mangled_watermark_cue_healing_pbp_and_nas_m3u_cleanup(self) -> None:
         chdman = self.base_config.binaries.chdman
         psxpackager = self.base_config.binaries.psxpackager

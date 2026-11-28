@@ -59,11 +59,28 @@ SIBLING_TEMP_MARKER_SUFFIXES: tuple[str, ...] = (
 # Syncthing temporary file prefixes
 SYNCTHING_TEMP_PREFIXES: tuple[str, ...] = ("~syncthing~", ".syncthing.")
 
-# Default relative candidate paths for Nintendo 3DS decryption keys
+# Default relative candidate paths for Nintendo 3DS decryption keys & eShop seed database
 DEFAULT_CTR_KEY_RELPATHS: tuple[str, ...] = (
     "./tools/3ds/aes_keys.txt",
     "./tools/3ds/boot9.bin",
     "./tools/3ds/keys.txt",
+)
+
+DEFAULT_CTR_BOOT9_RELPATHS: tuple[str, ...] = (
+    "./tools/3ds/boot9.bin",
+    "./tools/3ds/boot9_prot.bin",
+    "~/AppData/Roaming/3ds/boot9.bin",
+    "~/.3ds/boot9.bin",
+)
+
+DEFAULT_CTR_SEEDDB_RELPATHS: tuple[str, ...] = (
+    "./tools/3ds/seeddb.bin",
+    "~/AppData/Roaming/Azahar/sysdata/seeddb.bin",
+    "~/AppData/Roaming/Citra/sysdata/seeddb.bin",
+    "~/AppData/Roaming/3ds/seeddb.bin",
+    "~/.local/share/azahar-emu/sysdata/seeddb.bin",
+    "~/.local/share/citra-emu/sysdata/seeddb.bin",
+    "~/.3ds/seeddb.bin",
 )
 
 # Default candidate paths for Nintendo Switch keys (accepts standard `prod.keys` or NSCB `keys.txt`)

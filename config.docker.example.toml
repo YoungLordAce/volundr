@@ -67,6 +67,7 @@ rvz_compression_level = 5
 switch_merge_format = "xci"
 decompress_nsz = true
 rename_3ds_to_cci = true
+cia_games_to_cci = true
 cia_subdir = "_cia_install"
 generate_m3u = true
 multidisc_subdir = "_discs"

@@ -130,6 +130,9 @@ class AdvancedSettingsDialog(QDialog):
         self._chk_3ds_cci = QCheckBox("Rename decrypted .3ds cartridge dumps to .cci (for Azahar)")
         nin_form.addRow(self._chk_3ds_cci)
 
+        self._chk_cia_to_cci = QCheckBox("Convert Base Game 3DS .cia files to decrypted .cci (for Azahar / Cocoon)")
+        nin_form.addRow(self._chk_cia_to_cci)
+
         self._edit_cia_dir = QLineEdit()
         nin_form.addRow("3DS .cia updates/DLC subfolder:", self._edit_cia_dir)
 
@@ -188,6 +191,7 @@ class AdvancedSettingsDialog(QDialog):
             self._combo_switch_fmt.setCurrentIndex(sw_idx)
         self._chk_decomp_nsz.setChecked(c.decompress_nsz)
         self._chk_3ds_cci.setChecked(c.rename_3ds_to_cci)
+        self._chk_cia_to_cci.setChecked(c.cia_games_to_cci)
         self._edit_cia_dir.setText(c.cia_subdir)
         self._chk_wiiu_wua.setChecked(c.wiiu_to_wua)
 
@@ -211,6 +215,7 @@ class AdvancedSettingsDialog(QDialog):
             "switch_merge_format": str(self._combo_switch_fmt.currentData() or "xci"),
             "decompress_nsz": self._chk_decomp_nsz.isChecked(),
             "rename_3ds_to_cci": self._chk_3ds_cci.isChecked(),
+            "cia_games_to_cci": self._chk_cia_to_cci.isChecked(),
             "cia_subdir": self._edit_cia_dir.text().strip() or "_cia_install",
             "wiiu_to_wua": self._chk_wiiu_wua.isChecked(),
             "vita_repack_zip": self._chk_vita_zip.isChecked(),

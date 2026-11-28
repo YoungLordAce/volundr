@@ -13,7 +13,14 @@ import uuid
 import zipfile
 
 from src.constants import CD_SUBCHANNEL_EXTENSIONS
-from src.ctr_decrypt import CtrDecryptionError, can_decrypt_3ds, decrypt_3ds_to_cci
+from src.ctr_decrypt import (
+    CtrDecryptionError,
+    CtrMissingSeedError,
+    can_convert_cia_game_to_cci,
+    can_decrypt_3ds,
+    convert_cia_to_cci,
+    decrypt_3ds_to_cci,
+)
 from src.identifier import (
     SectorReader,
     _parse_iso9660_root_entries,
@@ -1907,6 +1914,29 @@ class Ctr3dsStrategy(ConversionStrategy):
             )
 
         if item.is_installable_cia:
+            if config.conversion.cia_games_to_cci and item.cia_category in ("game", "demo"):
+                can_conv, conv_note = can_convert_cia_game_to_cci(primary, config)
+                if can_conv:
+                    out = job_dir / f"{clean_stem}.cci"
+                    return ConversionPlan(
+                        artifact=ConversionArtifact(
+                            system_id="3ds",
+                            output_files=(out,),
+                            converted=True,
+                            is_installable_cia=False,
+                        ),
+                        action_description=f"{prefix}Convert Base Game .cia -> decrypted .cci -> {dest_dir}",
+                    )
+                target = (dest_dir / config.conversion.cia_subdir) if config.conversion.cia_subdir else dest_dir
+                return ConversionPlan(
+                    artifact=ConversionArtifact(
+                        system_id="3ds",
+                        output_files=(primary,),
+                        converted=False,
+                        is_installable_cia=True,
+                    ),
+                    action_description=f"{prefix}Route .cia -> {target} ({conv_note})",
+                )
             target = (dest_dir / config.conversion.cia_subdir) if config.conversion.cia_subdir else dest_dir
             return ConversionPlan(
                 artifact=ConversionArtifact(
@@ -1939,6 +1969,39 @@ class Ctr3dsStrategy(ConversionStrategy):
         primary = item.primary_file
         ext = primary.suffix.lower()
         if item.is_installable_cia:
+            if config.conversion.cia_games_to_cci and item.cia_category in ("game", "demo"):
+                can_conv, conv_note = can_convert_cia_game_to_cci(primary, config)
+                if can_conv:
+                    clean_stem = sanitize_rom_stem(primary.stem)
+                    try:
+                        out_cci = convert_cia_to_cci(primary, job_dir, config, clean_stem=clean_stem)
+                    except CtrMissingSeedError as exc:
+                        # Gracefully fall back to `_cia_install/` if a 9.6+ SeedCrypto game lacks `seeddb.bin`
+                        return ConversionArtifact(
+                            system_id="3ds",
+                            output_files=(primary,),
+                            converted=False,
+                            is_installable_cia=True,
+                            summary=f"Routed `.cia` to `{config.conversion.cia_subdir}` ({exc})",
+                        )
+                    except CtrDecryptionError as exc:
+                        raise ConversionError(str(exc)) from exc
+                    _verify_nonzero_output(out_cci, "ctr_cia_to_cci")
+                    return ConversionArtifact(
+                        system_id="3ds",
+                        output_files=(out_cci,),
+                        converted=True,
+                        tool_used="ctr_cia_to_cci",
+                        is_installable_cia=False,
+                        summary=f"Converted Base Game `.cia` `{primary.name}` -> `{out_cci.name}` for Azahar/Cocoon",
+                    )
+                return ConversionArtifact(
+                    system_id="3ds",
+                    output_files=(primary,),
+                    converted=False,
+                    is_installable_cia=True,
+                    summary=f"Installable 3DS `.cia` ({primary.name} — {conv_note})",
+                )
             return ConversionArtifact(
                 system_id="3ds",
                 output_files=(primary,),

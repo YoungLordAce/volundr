@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
-from src.constants import DEFAULT_CTR_KEY_RELPATHS, DEFAULT_SWITCH_KEY_RELPATHS
+from src.constants import (
+    DEFAULT_CTR_KEY_RELPATHS,
+    DEFAULT_CTR_SEEDDB_RELPATHS,
+    DEFAULT_SWITCH_KEY_RELPATHS,
+)
 from src.models import (
     ArchivePolicy,
     BinaryPaths,
@@ -481,6 +485,10 @@ def load_config(
             plat_bins.get("ctr_keys") or list(DEFAULT_CTR_KEY_RELPATHS),
             project_root,
         ),
+        ctr_seeddb=resolve_optional_file(
+            plat_bins.get("ctr_seeddb") or list(DEFAULT_CTR_SEEDDB_RELPATHS),
+            project_root,
+        ),
         zarchive=resolve_binary(
             "zarchive",
             _as_str_list(plat_bins.get("zarchive"), f"binaries.{platform_key}.zarchive"),
@@ -517,6 +525,7 @@ def load_config(
         switch_merge_format=merge_fmt,
         decompress_nsz=bool(conv_raw.get("decompress_nsz", True)),
         rename_3ds_to_cci=bool(conv_raw.get("rename_3ds_to_cci", True)),
+        cia_games_to_cci=bool(conv_raw.get("cia_games_to_cci", True)),
         cia_subdir=str(conv_raw.get("cia_subdir", "_cia_install")).strip("/\\"),
         generate_m3u=bool(conv_raw.get("generate_m3u", True)),
         multidisc_subdir=str(conv_raw.get("multidisc_subdir", "_discs")).strip("/\\"),

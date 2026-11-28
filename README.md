@@ -65,7 +65,7 @@ The Setup Wizard downloads free upstream CLI tools (`7z`, `chdman`, `PSXPackager
 | System | Files | Where to Place Them | What It Enables |
 | :--- | :--- | :--- | :--- |
 | **Nintendo Switch** | `prod.keys` *(or `keys.txt`)* | `tools/nscb/ztools/` *(or `~/.switch/prod.keys`)* | Required by `squirrel` for `.xci` merging & `.nsz` decompression *(auto-synced to `keys.txt`)* |
-| **Nintendo 3DS** | `aes_keys.txt` or `boot9.bin` | `tools/3ds/` | Auto-decrypts encrypted `.3ds` dumps to `.cci` *(ZeroKey dumps work without keys)* |
+| **Nintendo 3DS** | `aes_keys.txt` / `boot9.bin` *(+ optional `seeddb.bin`)* | `tools/3ds/` | Auto-decrypts encrypted `.3ds` dumps and converts Base Game `.cia` packages (`00040000...`) to decrypted `.cci` for Azahar & Cocoon *(Updates/DLC stay in `3ds/_cia_install/`)* |
 | **PS Vita** | `PSV_GAMES.tsv`, `PSV_DLCS.tsv`, `PSV_UPDATES.tsv` | `tools/psvita/` | Automatic `zRIF`/`work.bin` license generation and title normalization for `.pkg` files |
 
 ---

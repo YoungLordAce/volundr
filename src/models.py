@@ -84,6 +84,8 @@ class IdentificationResult:
     is_encrypted_3ds: bool = False
     is_zerokey_3ds: bool = False
     is_installable_cia: bool = False
+    cia_title_id: str | None = None
+    cia_category: str | None = None     # "game", "demo", "update", "dlc", "dsiware", "system", "other"
     is_compressed_switch: bool = False  # .nsz / .xcz
     is_multifile_switch: bool = False   # Base + Update + DLC bundle
     is_encrypted_wiiu: bool = False     # Encrypted WUP/NUS folder (title.tmd + *.app)
@@ -150,6 +152,7 @@ class BinaryPaths:
     squirrel_keys: Path | None
     psxpackager: Path | None = None
     ctr_keys: Path | None = None
+    ctr_seeddb: Path | None = None
     zarchive: Path | None = None
     cdecrypt: Path | None = None
     pkg2zip: Path | None = None
@@ -167,6 +170,7 @@ class ConversionSettings:
     switch_merge_format: str = "xci"
     decompress_nsz: bool = True
     rename_3ds_to_cci: bool = True
+    cia_games_to_cci: bool = True
     cia_subdir: str = "_cia_install"
     generate_m3u: bool = True
     multidisc_subdir: str = "_discs"

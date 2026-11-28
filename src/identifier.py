@@ -16,7 +16,7 @@ import zlib
 
 from src.archive_handler import is_archive
 from src.constants import IGNORED_FILENAMES, IGNORED_SIDECAR_EXTENSIONS
-from src.ctr_decrypt import inspect_3ds_header
+from src.ctr_decrypt import inspect_3ds_header, inspect_cia_header
 from src.models import DetectionMethod, IdentificationResult
 from src.runner import run_capture
 from src.switch_bundler import (
@@ -860,6 +860,8 @@ def identify_single_file(
         is_enc_3ds = False
         is_zk_3ds = False
         is_cia = ext == ".cia"
+        cia_tid: str | None = None
+        cia_cat: str | None = None
         is_comp_sw = ext in COMPRESSED_SWITCH_EXTENSIONS
         vita_tid: str | None = None
         vita_ver: str | None = None
@@ -871,7 +873,13 @@ def identify_single_file(
             is_enc_3ds, is_zk_3ds, enc_detail = inspect_3ds_header(file_path)
             reason = f"`{ext}` -> 3ds ({enc_detail})"
         elif is_cia:
-            reason = "`.cia` installable 3DS package (update/DLC/title)"
+            cia_info = inspect_cia_header(file_path)
+            if cia_info is not None:
+                cia_tid = cia_info.title_id
+                cia_cat = cia_info.category
+                reason = cia_info.detail
+            else:
+                reason = "`.cia` installable 3DS package (update/DLC/title)"
         elif is_comp_sw:
             reason = f"Compressed Switch package `{ext}` (requires decompression for Eden)"
         elif ext == ".vpk":
@@ -894,6 +902,8 @@ def identify_single_file(
             is_encrypted_3ds=is_enc_3ds,
             is_zerokey_3ds=is_zk_3ds,
             is_installable_cia=is_cia,
+            cia_title_id=cia_tid,
+            cia_category=cia_cat,
             is_compressed_switch=is_comp_sw,
             vita_title_id=vita_tid,
             vita_app_version=vita_ver,
