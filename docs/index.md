@@ -1,6 +1,6 @@
 # Völundr
 
-**Drop ROM archives in → get clean, compressed, emulator-ready games sorted into your library automatically.**
+**Automatic ROM Forge — drop raw ROM archives in → forge clean, compressed, emulator-ready games sorted into your library automatically.**
 
 Völundr is a cross-platform Python 3.11+ automated ROM ingestion pipeline for **Windows**, **Linux**, and **Docker**, available as both a **native Desktop GUI + System Tray app (PySide6 / Qt 6)** and a lightweight headless CLI. Drop `.zip`, `.7z`, `.rar`, raw disc images, or folders into `./drop` and Völundr identifies the console via binary headers, converts to the optimal emulator format (`.chd`, `.pbp`, `.rvz`, `.xci`, `.cci`, `.wua`, Vita3K `.zip`), and routes everything atomically into your local drive or NAS.
 

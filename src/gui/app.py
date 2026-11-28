@@ -108,7 +108,7 @@ class VolundrMainWindow(QMainWindow):
         self._icon_watching = build_app_icon(watching=True)
         self._icon_paused = build_app_icon(watching=False)
 
-        self.setWindowTitle(f"Völundr v{__version__} — Automatic ROM Processor")
+        self.setWindowTitle(f"Völundr v{__version__} — Automatic ROM Forge")
         self.setWindowIcon(self._icon_app)
         self.resize(980, 680)
         self.setMinimumSize(780, 520)
@@ -151,7 +151,7 @@ class VolundrMainWindow(QMainWindow):
         title_col.setSpacing(1)
         title_lbl = QLabel("Völundr")
         title_lbl.setObjectName("AppTitle")
-        ver_lbl = QLabel(f"v{__version__}  •  Automatic ROM Processor")
+        ver_lbl = QLabel(f"v{__version__}  •  Automatic ROM Forge")
         ver_lbl.setObjectName("AppVersion")
         title_col.addWidget(title_lbl)
         title_col.addWidget(ver_lbl)
@@ -177,12 +177,14 @@ class VolundrMainWindow(QMainWindow):
         header_layout.addWidget(self._btn_update_pill)
         header_layout.addStretch(1)
 
-        self._btn_toggle_watch = QPushButton("Start Watching")
+        self._btn_toggle_watch = QPushButton("Auto Forge")
         self._btn_toggle_watch.setObjectName("PrimaryBtn")
+        self._btn_toggle_watch.setToolTip("Continuously monitor the drop folder and forge incoming ROMs automatically")
         self._btn_toggle_watch.clicked.connect(self.toggle_watching)
         header_layout.addWidget(self._btn_toggle_watch)
 
-        self._btn_scan = QPushButton("Scan Now")
+        self._btn_scan = QPushButton("Forge Now")
+        self._btn_scan.setToolTip("Run a one-shot pass over everything currently in the drop folder")
         self._btn_scan.clicked.connect(self.trigger_scan_once)
         header_layout.addWidget(self._btn_scan)
 
@@ -203,7 +205,7 @@ class VolundrMainWindow(QMainWindow):
         body_layout.setSpacing(10)
 
         self._tabs = QTabWidget()
-        self._tabs.addTab(self._build_watch_tab(), "Watch && Activity")
+        self._tabs.addTab(self._build_watch_tab(), "Forge && Activity")
         self._tabs.addTab(self._build_doctor_tab(), "Doctor && Tools")
         self._tabs.addTab(self._build_settings_tab(), "Settings")
         body_layout.addWidget(self._tabs)
@@ -268,6 +270,9 @@ class VolundrMainWindow(QMainWindow):
         self._log_view = QPlainTextEdit()
         self._log_view.setReadOnly(True)
         self._log_view.setMaximumBlockCount(MAX_LOG_BLOCKS)
+        self._log_view.setPlaceholderText(
+            "The anvil is quiet — drop ROMs into ./drop and click Auto Forge or Forge Now to begin."
+        )
         log_layout.addWidget(self._log_view)
         splitter.addWidget(log_box)
 
@@ -348,7 +353,7 @@ class VolundrMainWindow(QMainWindow):
         # Desktop / Tray behavior (persisted via QSettings)
         ui_group = QGroupBox("Desktop && System Tray")
         ui_layout = QVBoxLayout(ui_group)
-        self._chk_auto_watch = QCheckBox("Start watching automatically when Völundr launches")
+        self._chk_auto_watch = QCheckBox("Start Auto Forge automatically when Völundr launches")
         self._chk_min_to_tray = QCheckBox("Hide to system tray when closing the window")
         self._chk_notifications = QCheckBox("Show desktop notifications when ROMs finish or are quarantined")
         self._chk_auto_update_check = QCheckBox("Check GitHub for Völundr updates on startup")
@@ -417,11 +422,11 @@ class VolundrMainWindow(QMainWindow):
         self._act_show_hide.triggered.connect(self._toggle_window_visibility)
         menu.addAction(self._act_show_hide)
 
-        self._act_tray_watch = QAction("Start Watching", self)
+        self._act_tray_watch = QAction("Auto Forge", self)
         self._act_tray_watch.triggered.connect(self.toggle_watching)
         menu.addAction(self._act_tray_watch)
 
-        self._act_tray_scan = QAction("Scan Drop Folder Now", self)
+        self._act_tray_scan = QAction("Forge Drop Folder Now", self)
         self._act_tray_scan.triggered.connect(self.trigger_scan_once)
         menu.addAction(self._act_tray_scan)
 
@@ -847,7 +852,7 @@ class VolundrMainWindow(QMainWindow):
 
     def _refresh_info_strip(self) -> None:
         self._info_strip.setText(
-            f"<b>Watching:</b> {self.config.paths.watch_dir} &nbsp;&nbsp;|&nbsp;&nbsp; "
+            f"<b>Drop Folder:</b> {self.config.paths.watch_dir} &nbsp;&nbsp;|&nbsp;&nbsp; "
             f"<b>Library:</b> {self.config.paths.library_root} &nbsp;&nbsp;|&nbsp;&nbsp; "
             f"<b>Post-Action:</b> {self.config.general.post_process_action.value}"
         )
@@ -858,19 +863,21 @@ class VolundrMainWindow(QMainWindow):
             self._btn_toggle_watch.setEnabled(False)
             self._btn_scan.setEnabled(False)
             icon = self._icon_watching
-            tooltip = f"Völundr v{__version__} — Scanning drop folder..."
+            tooltip = f"Völundr v{__version__} — Forging drop folder..."
         elif self._watching:
             self._status_indicator.set_state("watching")
             self._btn_toggle_watch.setEnabled(True)
-            self._btn_toggle_watch.setText("Pause Watching")
+            self._btn_toggle_watch.setText("Pause Forge")
+            self._btn_toggle_watch.setToolTip("Pause automatic monitoring of the drop folder")
             self._btn_toggle_watch.setObjectName("DangerBtn")
             self._btn_scan.setEnabled(False)
             icon = self._icon_watching
-            tooltip = f"Völundr v{__version__} — Watching {self.config.paths.watch_dir.name}/"
+            tooltip = f"Völundr v{__version__} — Auto-Forging {self.config.paths.watch_dir.name}/"
         else:
             self._status_indicator.set_state("paused")
             self._btn_toggle_watch.setEnabled(True)
-            self._btn_toggle_watch.setText("Start Watching")
+            self._btn_toggle_watch.setText("Auto Forge")
+            self._btn_toggle_watch.setToolTip("Continuously monitor the drop folder and forge incoming ROMs automatically")
             self._btn_toggle_watch.setObjectName("PrimaryBtn")
             self._btn_scan.setEnabled(True)
             icon = self._icon_paused
@@ -885,7 +892,7 @@ class VolundrMainWindow(QMainWindow):
         if self._tray is not None:
             self._tray.setIcon(icon)
             self._tray.setToolTip(tooltip)
-            self._act_tray_watch.setText("Pause Watching" if self._watching else "Start Watching")
+            self._act_tray_watch.setText("Pause Forge" if self._watching else "Auto Forge")
             self._act_tray_scan.setEnabled(not self._watching and not self._scanning)
 
     # --------------------------------------------------------------------------
@@ -904,7 +911,7 @@ class VolundrMainWindow(QMainWindow):
                 self._tray_hint_shown = True
                 self._tray.showMessage(
                     "Völundr minimized to tray",
-                    "Völundr is still running in the system tray. Right-click the icon to quit.",
+                    "Völundr is tending the forge in the system tray. Right-click the icon to quit.",
                     QSystemTrayIcon.MessageIcon.Information,
                     4000,
                 )

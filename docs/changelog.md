@@ -10,6 +10,7 @@ Versioning follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATC
 - **3DS Base Game `.cia` → Decrypted `.cci` Conversion & `seeddb.bin` Support:** Automatically reads `.cia` TMD Title IDs to convert Base Games (`00040000...`) and Demos (`00040002...`) into standalone decrypted `.cci` files in `roms/3ds/` for Azahar & Cocoon FE (including 9.6+ SeedCrypto eShop games via optional `tools/3ds/seeddb.bin`), while keeping Updates (`0004000e...`) and DLC (`0004008c...`) in `3ds/_cia_install/`. Added `cia_games_to_cci` toggle in `config.toml` / Advanced Settings and `3DS seeddb` check in Doctor & Tools.
 
 ### Changed
+- **Automatic ROM Forge Theme & UI Copy:** Updated Völundr's tagline to **Automatic ROM Forge** and refreshed desktop GUI labels (`Auto Forge` / `Pause Forge`, `Forge Now`, `Forge & Activity`, `Auto-Forging` / `Forging...` status states, tray menu/toast, and Setup Wizard/log flavour text).
 - **GUI-First Documentation:** Streamlined `README.md`, `docs/getting-started.md`, and `docs/desktop-gui.md` to guide newcomers directly to the Desktop GUI and `Start Volundr.bat`, moving CLI commands and manual tool tables into collapsible reference sections.
 
 ### Fixed

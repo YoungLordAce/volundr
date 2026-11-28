@@ -12,7 +12,7 @@ Requires **Python 3.11+**.
 2. **Double-click `Start Volundr.bat`** inside the `volundr` folder.
    - Automatically creates `.venv` and installs all Python & GUI dependencies on first run.
    - Launches Völundr's built-in **Setup Wizard** to choose your ROM library folder and install external CLI tools automatically.
-3. Click **Start Watching** (or **Scan Now**) and drop ROMs into `./drop`!
+3. Click **Auto Forge** (or **Forge Now**) and drop ROMs into `./drop`!
 
 ### Linux / macOS
 ```bash

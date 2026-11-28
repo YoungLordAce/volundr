@@ -31,9 +31,9 @@ Double-click **`Start Volundr.bat`** in your `volundr` folder. On first run it a
 
 ## Interface Tour
 
-### Watch & Activity
-- **Live Glowing Status Indicator:** Shows **Watching** (green), **Scanning...** (blue), **Paused** (amber), or **Error** (red).
-- **Quick Controls:** Toggle **Start / Pause Watching**, trigger a one-shot **Scan Now**, or open your **Drop** and **Library** folders directly in Explorer/Files.
+### Forge & Activity
+- **Live Glowing Status Indicator:** Shows **Auto-Forging** (green), **Forging...** (blue), **Paused** (amber), or **Error** (red).
+- **Quick Controls:** Toggle **Auto Forge / Pause Forge**, trigger a one-shot **Forge Now**, or open your **Drop** and **Library** folders directly in Explorer/Files.
 - **Recent Activity & Live Event Log:** Track every routed, skipped, deferred, or quarantined item alongside a real-time dark console log.
 - **System Tray:** Closing the window optionally minimizes Völundr to the system tray (with a live green/amber status dot on the tray icon, desktop notifications, and a right-click quick menu).
 
@@ -43,7 +43,7 @@ Run non-blocking read-only diagnostics on your Python dependencies, disk space, 
 ![Völundr Desktop GUI — Doctor & Tools](assets/gui-doctor.png)
 
 ### Settings & Advanced Settings
-Configure `watch_dir`, `library_root`, and `post_process_action` safely (preserving all comments and formatting in `config.toml`), customize desktop/tray behavior (default startup state is **Paused**, toggleable with *Start watching automatically when Völundr launches*), and open **Advanced Settings...** for stability polling, staging headroom, PS1 PBP compression, Switch merge format, and Wii U `.wua` options.
+Configure `watch_dir`, `library_root`, and `post_process_action` safely (preserving all comments and formatting in `config.toml`), customize desktop/tray behavior (default startup state is **Paused**, toggleable with *Start Auto Forge automatically when Völundr launches*), and open **Advanced Settings...** for stability polling, staging headroom, PS1 PBP compression, Switch merge format, 3DS `.cia` → `.cci`, and Wii U `.wua` options.
 
 ![Völundr Desktop GUI — Settings](assets/gui-settings.png)
 

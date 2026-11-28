@@ -514,8 +514,8 @@ class StatusIndicator(QWidget):
     """Minimal borderless header status indicator: soft glowing dot + aligned text."""
 
     _PALETTE = {
-        "watching": ("#22c55e", "#86efac", "Watching"),
-        "scanning": ("#38bdf8", "#7dd3fc", "Scanning..."),
+        "watching": ("#22c55e", "#86efac", "Auto-Forging"),
+        "scanning": ("#38bdf8", "#7dd3fc", "Forging..."),
         "paused": ("#f59e0b", "#fcd34d", "Paused"),
         "error": ("#ef4444", "#fca5a5", "Error"),
     }

@@ -292,8 +292,8 @@ class SetupWizardDialog(QDialog):
         layout.setSpacing(12)
 
         intro = QLabel(
-            "Configure where Völundr watches for incoming ROMs and where it writes your "
-            f"converted, emulator-ready library. Existing comments in {_code('config.toml')} "
+            "Prepare your forge — choose where Völundr watches for incoming ROMs and where it writes "
+            f"your converted, emulator-ready library. Existing comments in {_code('config.toml')} "
             "are preserved safely."
         )
         intro.setWordWrap(True)

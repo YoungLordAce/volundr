@@ -1,6 +1,6 @@
 [project]
 site_name = "Völundr"
-site_description = "Universal Automated ROM Ingestion Pipeline for Windows, Linux, and Docker."
+site_description = "Automatic ROM Forge — Cross-platform ROM ingestion pipeline for Windows, Linux, and Docker."
 site_url = "https://younglordace.github.io/volundr/"
 repo_url = "https://github.com/YoungLordAce/volundr"
 repo_name = "YoungLordAce/volundr"

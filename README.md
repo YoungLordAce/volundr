@@ -3,7 +3,7 @@
 [![Documentation](https://img.shields.io/badge/docs-github.io-blue)](https://younglordace.github.io/volundr/)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-**Automatic ROM Processor — drop ROM archives in → get clean, compressed, emulator-ready games sorted into your library automatically.**
+**Automatic ROM Forge — drop raw ROM archives in → forge clean, compressed, emulator-ready games sorted into your library automatically.**
 
 Völundr identifies consoles via binary headers, converts games to their optimal emulator format (`.chd`, `.pbp`, `.rvz`, `.xci`, `.cci`, `.wua`, Vita3K `.zip`), and moves everything safely into your local drive or NAS. Available as a **native Desktop App + System Tray (Windows & Linux)** or a lightweight **headless CLI / Docker container**.
 
@@ -43,7 +43,7 @@ Requires **Python 3.11+** ([python.org](https://www.python.org/downloads/) — o
 2. **Double-click `Start Volundr.bat`** inside the `volundr` folder.
    - On first launch, it automatically sets up `.venv` and installs all Python + GUI dependencies.
    - The **Setup Wizard** opens automatically to pick your ROM library folder and download the official external CLI tools for the consoles you want.
-3. Click **Start Watching** (or **Scan Now**) and drop ROMs into `./drop`!
+3. Click **Auto Forge** (or **Forge Now**) and drop ROMs into `./drop`!
 
 ### Linux / macOS
 ```bash
