@@ -3,6 +3,20 @@
 All notable changes to Völundr are documented in this file.
 Versioning follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`).
 
+## [Unreleased]
+
+### Added
+- **One-Click Windows Launcher (`Start Volundr.bat`):** Auto-bootstraps `.venv`, installs core and GUI dependencies on first run, and launches Völundr windowless via `pythonw.exe`.
+- **3DS Base Game `.cia` → Decrypted `.cci` Conversion & `seeddb.bin` Support:** Automatically reads `.cia` TMD Title IDs to convert Base Games (`00040000...`) and Demos (`00040002...`) into standalone decrypted `.cci` files in `roms/3ds/` for Azahar & Cocoon FE (including 9.6+ SeedCrypto eShop games via optional `tools/3ds/seeddb.bin`), while keeping Updates (`0004000e...`) and DLC (`0004008c...`) in `3ds/_cia_install/`. Added `cia_games_to_cci` toggle in `config.toml` / Advanced Settings and `3DS seeddb` check in Doctor & Tools.
+
+### Changed
+- **GUI-First Documentation:** Streamlined `README.md`, `docs/getting-started.md`, and `docs/desktop-gui.md` to guide newcomers directly to the Desktop GUI and `Start Volundr.bat`, moving CLI commands and manual tool tables into collapsible reference sections.
+
+### Fixed
+- **Windowless `pythonw.exe` Subprocess Execution:** Fixed `'NoneType' object has no attribute 'isatty'` when running conversions under windowless `pythonw.exe` (via `Start Volundr.bat` / `volundr_gui.pyw`), redirected `None` `stdout`/`stderr` safely to `os.devnull`, and added `CREATE_NO_WINDOW` on Windows so child CLI tools no longer flash console windows.
+- **Dolphin & PS Vita `pkg2zip` Auto-Installers:** Switched `setup_volundr.py` Dolphin discovery to Dolphin's official JSON update API (`dolphin-emu.org/update/latest/beta`), fixed HTTP 403 error attribution for non-GitHub hosts, and updated `lusid1/pkg2zip` asset matching for `pkg2zip.zip`.
+- **Readable Monospace Code Pills in GUI Dialogs:** Restyled inline code snippets in the Setup Wizard and Check for Updates dialogs to use smooth antialiased Consolas pills instead of Qt's fallback bitmap Courier font.
+
 ## [0.3.0] - 2026-11-26
 
 ### Added
